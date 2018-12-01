@@ -1,0 +1,25 @@
+{
+  "name": "adventofcode2018",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "grab-star": "ts-node run-on-input",
+    "test": "ts-mocha \"**/*.spec.ts\""
+  },
+  "author": "Vincent Verhoeven",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.11",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "sinon": "^7.1.1",
+    "ts-mocha": "^2.0.0",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.1"
+  }
+}
