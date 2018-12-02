@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { checksum } from "./day2";
+import { checksum, matchingBoxes } from "./day2";
 
-describe('Box Id checksum (day 2)', function () {
-  describe('should be based on letter counts', function () {
-    it('example', () => {
+describe('Box Ids (day 2)', function () {
+  describe('checksum', function () {
+    it('should be based on letter counts', () => {
       expect(checksum([
         'abcdef',
         'bababc',
@@ -14,7 +14,20 @@ describe('Box Id checksum (day 2)', function () {
         'ababab'
       ])).to.equal(12);
     });
-
   });
 
+  describe('prototype fabric boxes', function () {
+    it('should differ exactly in one character', () => {
+      expect(matchingBoxes([
+        'abcde',
+        'fghij',
+        'klmno',
+        'pqrst',
+        'fguij',
+        'axcye',
+        'wvxyz'
+      ])).to.equal('fgij');
+    });
+
+  });
 });
