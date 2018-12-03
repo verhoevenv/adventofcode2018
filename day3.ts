@@ -6,8 +6,16 @@ export function overlap(claimsStr: string[]) {
     return countOverlaps(fabric);
 }
 
+export function intact(claimsStr: string[]) {
+    const claims = claimsStr.map(parse);
+    const fabric = calculateFabric(claims);
+    return findIntactClaim(fabric, claims);
+}
+
+type ClaimId = string;
+
 type Fabric = {
-    [position: string]: number
+    [position: string]: ClaimId[]
 }
 
 function calculateFabric(claims: Claim[]) {
@@ -16,8 +24,9 @@ function calculateFabric(claims: Claim[]) {
         for (let x = claim.x; x < claim.x + claim.w; x++) {
             for (let y = claim.y; y < claim.y + claim.h; y++) {
                 let idx = `${x},${y}`;
-                fabric[idx] = (fabric[idx] || 0) + 1                    
-            }    
+                let previousClaims = (fabric[idx] || [])
+                fabric[idx] = [...previousClaims, claim.id];
+            }
         }
     }
     return fabric;
@@ -26,15 +35,30 @@ function calculateFabric(claims: Claim[]) {
 function countOverlaps(fabric: Fabric) {
     let numOverlaps = 0;
     for (let position in fabric) {
-        if (fabric[position] > 1) {
+        if (fabric[position].length > 1) {
             numOverlaps += 1;
         }
     }
     return numOverlaps;
 }
 
+function findIntactClaim(claimsOnFabric: Fabric, claims: Claim[]) {
+    let intactClaimIds = new Set(claims.map(claim => claim.id));
+    for (let position in claimsOnFabric) {
+        if (claimsOnFabric[position].length > 1) {
+            claimsOnFabric[position].forEach(
+                claim => intactClaimIds.delete(claim)
+            )
+        }
+    }
+    if (intactClaimIds.size !== 1) {
+        throw `Wrong amount of intact claims found in ${intactClaimIds}`
+    }
+    return [...intactClaimIds][0];
+}
+
 interface Claim {
-    id: string,
+    id: ClaimId,
     x: number,
     y: number,
     w: number,
@@ -54,5 +78,5 @@ function parse(claim: string): Claim {
 
 export const solution: DaySolution = {
     part1: (input: string) => overlap(input.split('\n')),
-    part2: (input: string) => null
+    part2: (input: string) => intact(input.split('\n'))
 }
