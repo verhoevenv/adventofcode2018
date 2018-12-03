@@ -1,2 +1,5 @@
 node_modules/
 input.txt
+
+*.iml
+.idea/
