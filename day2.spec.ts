@@ -1,5 +1,5 @@
-import { expect } from "chai";
-import { checksum, matchingBoxes } from "./day2";
+import {expect} from "chai";
+import {checksum, matchingBoxes} from "./day2";
 
 describe('Box Ids (day 2)', function () {
   describe('checksum', function () {

@@ -1,5 +1,5 @@
-import { expect } from "chai";
-import { overlap, intact } from "./day3";
+import {expect} from "chai";
+import {overlap, intact} from "./day3";
 
 describe('Claims (day 3)', function () {
   describe('overlap', function () {
