@@ -12,6 +12,16 @@ export function strategy1(log: string[]) {
   return guard * minute;
 }
 
+export function strategy2(log: string[]) {
+  let firstPassEvents = log.map(parseRawStrings);
+  let orderedEvents = order(firstPassEvents);
+  let eventsGroupedByDay = groupEvents(orderedEvents);
+  let schedule = buildSchedule(eventsGroupedByDay);
+
+  let [guard, minute] = findMostSleepingGuardOnOneMinute(schedule);
+  return guard * minute;
+}
+
 function groupEvents(orderedEvents: Event[]) {
   let day = 'not a day yet';
   let groupings: { [date: string]: Event[] } = {};
@@ -109,9 +119,9 @@ function findMostSleepingMinute(schedule: Schedule, guard: GuardID) {
   let sleepTimes: { [minute: number]: number } = {};
   for (let scheduleKey in schedule) {
     let scheduleElement = schedule[scheduleKey];
-    if(scheduleElement.guard === guard) {
+    if (scheduleElement.guard === guard) {
       for (let asleepKey in scheduleElement.asleep) {
-        if(scheduleElement.asleep[asleepKey] === 'Asleep') {
+        if (scheduleElement.asleep[asleepKey] === 'Asleep') {
           sleepTimes[asleepKey] = (sleepTimes[asleepKey] || 0) + 1;
         }
       }
@@ -128,6 +138,34 @@ function findMostSleepingMinute(schedule: Schedule, guard: GuardID) {
     }
   }
   return parseInt(mostSleepyMinute);
+}
+
+function findMostSleepingGuardOnOneMinute(schedule: Schedule) {
+  let sleepTimes: { [idx: string]: number } = {};
+  for (let scheduleKey in schedule) {
+    let scheduleElement = schedule[scheduleKey];
+    let guardId = scheduleElement.guard;
+    for (let minute in scheduleElement.asleep) {
+      if (scheduleElement.asleep[minute] === 'Asleep') {
+        let idx = `${guardId}-${minute}`;
+        sleepTimes[idx] = (sleepTimes[idx] || 0) + 1;
+      }
+    }
+  }
+
+  let maxAmountSleep = -1;
+  let mostSleepyMinute = undefined;
+  for (let minute in sleepTimes) {
+    let sleepTime = sleepTimes[minute];
+    if (sleepTime > maxAmountSleep) {
+      mostSleepyMinute = minute;
+      maxAmountSleep = sleepTime;
+    }
+  }
+  let match = /(\d+)-(\d+)/.exec(mostSleepyMinute);
+  let guardId = parseInt(match[1]);
+  let minute = parseInt(match[2]);
+  return [guardId, minute];
 }
 
 type GuardBusiness =
@@ -215,5 +253,5 @@ function parseRawStrings(logLine: string): Event {
 
 export const solution: DaySolution = {
   part1: (input: string) => strategy1(input.split("\n")),
-  part2: (input: string) => null
+  part2: (input: string) => strategy2(input.split("\n"))
 };
