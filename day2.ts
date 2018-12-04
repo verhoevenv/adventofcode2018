@@ -62,4 +62,4 @@ function almostMatch(first: string, second: string) : string | false {
 export const solution: DaySolution = {
     part1: (input: string) => checksum(input.split('\n')),
     part2: (input: string) => matchingBoxes(input.split('\n'))
-}
+};

@@ -24,7 +24,7 @@ function calculateFabric(claims: Claim[]) {
         for (let x = claim.x; x < claim.x + claim.w; x++) {
             for (let y = claim.y; y < claim.y + claim.h; y++) {
                 let idx = `${x},${y}`;
-                let previousClaims = (fabric[idx] || [])
+                let previousClaims = (fabric[idx] || []);
                 fabric[idx] = [...previousClaims, claim.id];
             }
         }
@@ -79,4 +79,4 @@ function parse(claim: string): Claim {
 export const solution: DaySolution = {
     part1: (input: string) => overlap(input.split('\n')),
     part2: (input: string) => intact(input.split('\n'))
-}
+};

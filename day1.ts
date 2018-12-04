@@ -28,4 +28,4 @@ export function duplicatedSum(changesAsStr: string[]) {
 export const solution: DaySolution = {
     part1: (input: string) => totalSum(input.split('\n')),
     part2: (input: string) => duplicatedSum(input.split('\n'))
-}
+};
