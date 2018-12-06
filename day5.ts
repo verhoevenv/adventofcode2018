@@ -10,6 +10,19 @@ export function react(polymer: string) {
   return currentPolymer.length;
 }
 
+export function improveAndReact(polymer: string) {
+  const letters = Array.from({length: 26}, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
+  let minSeenLength = Number.MAX_SAFE_INTEGER;
+  for (let letter of letters) {
+    let improvedPolymer = polymer.split(letter).join('').split(letter.toLowerCase()).join('');
+    let lengthAfterReaction = react(improvedPolymer);
+    if (lengthAfterReaction < minSeenLength) {
+      minSeenLength = lengthAfterReaction;
+    }
+  }
+  return minSeenLength;
+}
+
 function reactFully(originalPolymer: string): [boolean, string] {
   let changes = false;
   let newPolymer = [];
@@ -42,5 +55,5 @@ function isPolarityUp(unit: String) {
 
 export const solution: DaySolution = {
   part1: (input: string) => react(input),
-  part2: (input: string) => null
+  part2: (input: string) => improveAndReact(input)
 };

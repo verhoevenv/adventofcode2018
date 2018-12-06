@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {react} from "./day5";
+import {improveAndReact, react} from "./day5";
 
 describe('Polymers (day 5)', function () {
   describe('units after reaction', function () {
@@ -17,6 +17,11 @@ describe('Polymers (day 5)', function () {
     });
     it('example 5', () => {
       expect(react('dabAcCaCBAcCcaDA')).to.equal(10);
+    });
+  });
+  describe('units after reaction with improved polymer', function () {
+    it('example', () => {
+      expect(improveAndReact('dabAcCaCBAcCcaDA')).to.equal(4);
     });
   });
 });
