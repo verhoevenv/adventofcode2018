@@ -1,14 +1,20 @@
 import {DaySolution} from "./run-on-input";
 import {maximalBy, minimalBy} from "./min";
-import {sortOn} from "./sortUtil";
 
 type Coordinate = [number, number];
 
 export function largestArea(coordinates: Coordinate[]) {
   const gridSize = determineNeededSize(coordinates);
   const distanceGrids = coordinates.map((coor, idx) => createDistanceGrid(idx, gridSize, coor));
-  const closestGrid = mergeGrids(distanceGrids);
+  const closestGrid = createGridWithClosestCoordinates(distanceGrids);
   return largestNonInfiniteArea(closestGrid);
+}
+
+export function areaCloserThan(maxTotalDistance: number, coordinates: Coordinate[]) {
+  const gridSize = determineNeededSize(coordinates);
+  const distanceGrids = coordinates.map((coor, idx) => createDistanceGrid(idx, gridSize, coor));
+  const totalDistances = createTotalDistanceGrid(distanceGrids);
+  return countLargerThan(totalDistances, maxTotalDistance);
 }
 
 type GridSize = [number, number];
@@ -28,13 +34,17 @@ function determineNeededSize(coordinates: Coordinate[]): GridSize {
 type GridId = number;
 type SerializedCoordinate = string;
 type Distance = number;
-type DistanceGrid = {
-  id: GridId,
+
+interface DistanceGridWithId extends DistanceGrid {
+  id: GridId
+}
+
+interface DistanceGrid {
   distance: Map<SerializedCoordinate, Distance>,
   size: GridSize
-};
+}
 
-function createDistanceGrid(id: GridId, gridSize: GridSize, origin: Coordinate) {
+function createDistanceGrid(id: GridId, gridSize: GridSize, origin: Coordinate): DistanceGridWithId {
   let grid = {
     id: id,
     distance: new Map(),
@@ -75,7 +85,7 @@ type ClosestGrid = {
   size: GridSize
 };
 
-function mergeGrids(grids: DistanceGrid[]): ClosestGrid {
+function createGridWithClosestCoordinates(grids: DistanceGridWithId[]): ClosestGrid {
   let result: ClosestGrid = {
     closest: new Map(),
     size: grids[0].size
@@ -88,6 +98,23 @@ function mergeGrids(grids: DistanceGrid[]): ClosestGrid {
       if (nearest.length === 1) {
         result.closest.set(coorAsString, nearest[0].id);
       }
+    }
+  }
+
+  return result;
+}
+
+function createTotalDistanceGrid(grids: DistanceGrid[]): DistanceGrid {
+  let result: DistanceGrid = {
+    distance: new Map(),
+    size: grids[0].size
+  };
+
+  for (let x = 0; x < result.size[0]; x++) {
+    for (let y = 0; y < result.size[1]; y++) {
+      let coorAsString = serializeCoordinate([x, y]);
+      let total = grids.reduce((acc, grid) => acc + grid.distance.get(coorAsString), 0);
+      result.distance.set(coorAsString, total);
     }
   }
 
@@ -112,9 +139,22 @@ function largestNonInfiniteArea(grid: ClosestGrid) {
   return maximalBy(areaSizes.entries(), x => x[1])[1];
 }
 
+function countLargerThan(grid: DistanceGrid, maxDistance: number) {
+  let count = 0;
+  for (let x = 0; x < grid.size[0]; x++) {
+    for (let y = 0; y < grid.size[1]; y++) {
+      let coorAsString = serializeCoordinate([x, y]);
+      if (grid.distance.get(coorAsString) < maxDistance) {
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
 export const solution: DaySolution = {
   part1: (input: string) => largestArea(input.split("\n").map(parsePairs)),
-  part2: (input: string) => null
+  part2: (input: string) => areaCloserThan(10000, input.split("\n").map(parsePairs))
 };
 
 function parsePairs(line: string): [number, number] {
